@@ -1,5 +1,4 @@
-import React, { useState, useEffect, useRef, useMemo } from 'react';
-import { FetchStatus } from '../types';
+import React, { useState, useEffect, useRef } from 'react';
 
 interface AutocompleteProps {
   label: string;
@@ -105,8 +104,13 @@ const Autocomplete: React.FC<AutocompleteProps> = ({
     setIsOpen(false);
   };
 
+  const normalizedInputValue = inputValue.trim();
+  const hasExactOptionMatch = options.some((option) => option.toLowerCase() === normalizedInputValue.toLowerCase());
+
   const handleCustomAdd = () => {
-    onChange(inputValue);
+    if (!normalizedInputValue) return;
+    onChange(normalizedInputValue);
+    setInputValue(normalizedInputValue);
     setIsOpen(false);
   };
 
@@ -126,9 +130,10 @@ const Autocomplete: React.FC<AutocompleteProps> = ({
           value={inputValue}
           onChange={handleInputChange}
           onKeyDown={(e) => {
-            if (e.key === 'Enter' && allowCustom && inputValue.trim()) {
+            if (e.key === 'Enter' && allowCustom && normalizedInputValue) {
               e.preventDefault();
-              onChange(inputValue.trim());
+              onChange(normalizedInputValue);
+              setInputValue(normalizedInputValue);
               setIsOpen(false);
             }
           }}
@@ -188,7 +193,7 @@ const Autocomplete: React.FC<AutocompleteProps> = ({
           )}
 
           {/* Custom Add Option */}
-          {allowCustom && inputValue && !filteredOptions.includes(inputValue) && (
+          {allowCustom && normalizedInputValue && !hasExactOptionMatch && (
              <div 
                 onClick={handleCustomAdd}
                 className="border-t border-slate-100 px-4 py-3 bg-slate-50 hover:bg-slate-100 cursor-pointer text-blue-600 text-sm font-semibold flex items-center justify-center gap-2 transition-colors sticky bottom-0"
@@ -196,7 +201,7 @@ const Autocomplete: React.FC<AutocompleteProps> = ({
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                     <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
                 </svg>
-                Ajouter "{inputValue}"
+                Ajouter "{normalizedInputValue}"
              </div>
           )}
         </div>
