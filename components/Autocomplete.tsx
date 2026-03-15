@@ -14,6 +14,7 @@ interface AutocompleteProps {
   required?: boolean;
   error?: string;
   id: string;
+  commitOnType?: boolean;
 }
 
 const Autocomplete: React.FC<AutocompleteProps> = ({
@@ -28,7 +29,8 @@ const Autocomplete: React.FC<AutocompleteProps> = ({
   loading = false,
   required = false,
   error,
-  id
+  id,
+  commitOnType = false
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [inputValue, setInputValue] = useState(value);
@@ -70,6 +72,10 @@ const Autocomplete: React.FC<AutocompleteProps> = ({
     const newValue = e.target.value;
     setInputValue(newValue);
     setIsOpen(true);
+
+    if (commitOnType && allowCustom) {
+      onChange(newValue);
+    }
     
     // If user clears input, verify we clear the parent state too if desired, 
     // or wait for selection. Here we just update the input view.
@@ -119,6 +125,13 @@ const Autocomplete: React.FC<AutocompleteProps> = ({
           type="text"
           value={inputValue}
           onChange={handleInputChange}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' && allowCustom && inputValue.trim()) {
+              e.preventDefault();
+              onChange(inputValue.trim());
+              setIsOpen(false);
+            }
+          }}
           onFocus={() => setIsOpen(true)}
           disabled={disabled}
           placeholder={placeholder}

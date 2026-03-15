@@ -161,6 +161,7 @@ const VehicleForm: React.FC = () => {
                         setModelError(undefined);
                     }}
                     options={availableModels}
+                    commitOnType
                     loading={isLoadingModels}
                     disabled={!formData.brand}
                     required
