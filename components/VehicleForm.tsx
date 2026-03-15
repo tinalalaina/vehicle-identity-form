@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import Autocomplete from './Autocomplete';
-import { POPULAR_BRANDS, BODY_TYPES, ENGINE_TYPES, getYears } from '../services/staticData';
+import { POPULAR_BRANDS, BODY_TYPES, ENGINE_TYPES, getYears, getFallbackModelsByBrand } from '../services/staticData';
 import { fetchModelsFromAI, generateTitleSuggestion, fetchBrandsFromAI } from '../services/geminiService';
 
 const VehicleForm: React.FC = () => {
@@ -35,8 +35,11 @@ const VehicleForm: React.FC = () => {
       if (aiModels.length > 0) {
         setAvailableModels(aiModels);
       } else {
-        // Fallback allows manual entry
-        setAvailableModels([]); 
+        const fallbackModels = getFallbackModelsByBrand(formData.brand);
+        setAvailableModels(fallbackModels);
+        if (fallbackModels.length === 0) {
+          setModelError('Aucun modèle suggéré pour cette marque. Vous pouvez en ajouter un manuellement.');
+        }
       }
       setIsLoadingModels(false);
     };
