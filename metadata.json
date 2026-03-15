@@ -1,0 +1,5 @@
+{
+  "name": "Vehicle Identity Form",
+  "description": "A comprehensive vehicle identification form powered by Gemini to retrieve any car brand and model in existence.",
+  "requestFramePermissions": []
+}
